@@ -68,7 +68,12 @@ string Directory::getAbsolutePath() {
     return parent->getAbsolutePath() + "/" + getName();
 }
 
-void Directory::sortByName() {
-    sort(children.begin(), children.end(), greater<string>());
+struct nameComparator {
+    bool operator()(const BaseFile &a, const BaseFile &b) {
+        return a.getName().compare(b.getName()) < 0;
+    }
 };
 
+void Directory::sortByName() {
+    sort(children.begin(), children.end(), nameComparator());
+};
