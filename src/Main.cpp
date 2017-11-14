@@ -1,30 +1,32 @@
 #include <iostream>
 #include "../include/Files.h"
+#include "../include/Commands.h"
 
 using namespace std;
 unsigned int verbose = 0;
 
 int main(int, char **) {
-    File file1("file1", 5);
-    File file2("file2",4);
 
-    Directory rootDir("root", nullptr);
-    rootDir.addFile(&file1);
-    rootDir.addFile(&file2);
+    FileSystem *fs = new FileSystem();
+    File *file1 = new File("file1", 5);
+    File *file2 = new File("file2", 4);
 
-    Directory dir1("dir1", &rootDir);
-    rootDir.addFile(&dir1);
+    Directory &rootDir = fs->getRootDirectory();
+    rootDir.addFile(file1);
+    rootDir.addFile(file2);
 
-    File file3("file3", 1);
-    dir1.addFile(&file3);
+    Directory *dir1 = new Directory("dir1", &rootDir);
+    rootDir.addFile(dir1);
+
+    File *file3 = new File("file3", 1);
+    dir1->addFile(file3);
+    File *file4 = new File("file4", 2);
+    dir1->addFile(file4);
 
     cout << rootDir.getSize() << endl;
-    cout << dir1.getAbsolutePath() << endl;
 
-    dir1.removeFile("file3");
-    cout << rootDir.getSize() << endl;
+    CdCommand command("dir1");
+    command.execute(*fs);
 
-    rootDir.sortByName();
-    cout << rootDir.getSize() << endl;
     return 0;
 }
