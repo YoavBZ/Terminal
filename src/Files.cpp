@@ -29,6 +29,10 @@ int File::getSize() const {
 
 bool File::isFile() { return true; }
 
+string File::toString() {
+    return "FILE\t" + getName() + "\t" + to_string(size);
+}
+
 // ** Directory **
 Directory::Directory(string name, Directory *parent) : BaseFile(name), children(), parent(parent) {}
 
@@ -69,10 +73,17 @@ void Directory::removeFile(BaseFile *file) {
 }
 
 string Directory::getAbsolutePath() {
+    string path = getAbsolutePathR();
+    if (path.empty())
+        return "/";
+    return path;
+}
+
+string Directory::getAbsolutePathR() {
     if (!parent) {
         return "";
     }
-    return parent->getAbsolutePath() + "/" + getName();
+    return parent->getAbsolutePathR() + "/" + getName();
 }
 
 bool nameCompare(const BaseFile *a, const BaseFile *b) {
@@ -175,4 +186,8 @@ Directory::~Directory() {
         removeFile(children[0]);
     }
     children.clear();
+}
+
+string Directory::toString() {
+    return "DIR\t"+getName()+"\t"+ to_string(getSize());
 }

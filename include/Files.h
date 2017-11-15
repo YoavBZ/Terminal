@@ -21,6 +21,7 @@ public:
 
     virtual bool isFile() =0; //added
     virtual ~BaseFile();
+    virtual string toString()=0;
 };
 
 class File : public BaseFile {
@@ -31,7 +32,7 @@ public:
     File(string name, int size); // Constructor
     int getSize() const; // Return the size of the file
     bool isFile(); // added
-
+    virtual string toString();
 };
 
 class Directory : public BaseFile {
@@ -55,7 +56,9 @@ public:
     void sortBySize(); // Sort children by size (not recursively)
     vector<BaseFile *> getChildren() const; // Return children
     int getSize() const; // Return the size of the directory (recursively)
-    string getAbsolutePath();  //Return the path from the root to this
+    string getAbsolutePath();//Return the path from the root to this
+    string getAbsolutePathR();
+    virtual  string toString();
     // Rule of 5
     virtual ~Directory(); // Distructor
     Directory(const Directory &other); // Copy constructor

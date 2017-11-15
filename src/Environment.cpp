@@ -19,10 +19,10 @@ void Environment::addToHistory(BaseCommand *command) {
     commandsHistory.push_back(command);
 }
 
-FileSystem& Environment::getFileSystem() const {
-    return const_cast<FileSystem &>(fs);
+FileSystem &Environment::getFileSystem() const {
+    return (FileSystem &) fs;
 }
 
-const vector<BaseCommand*>& Environment::getHistory() const {
+const vector<BaseCommand *> &Environment::getHistory() const {
     return commandsHistory;
 }

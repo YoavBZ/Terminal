@@ -19,7 +19,7 @@ public:
     virtual string toString() = 0;
 
 protected:
-    vector<string> parseArgs(string args);
+    vector<string> parseArgs(string args, char delimiter);
 
     Directory *getPath(Directory *rootDir, Directory *currentDir, string path);
 };

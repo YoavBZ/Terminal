@@ -23,10 +23,28 @@ int main(int, char **) {
     File *file4 = new File("file4", 2);
     dir1->addFile(file4);
 
-    cout << rootDir.getSize() << endl;
+    Directory *dir2 = new Directory("dir2", dir1);
+    dir1->addFile(dir2);
 
-    CdCommand command("dir1");
+    cout << rootDir.getSize() << endl;
+    LsCommand lsCommand("dir1");
+    lsCommand.execute(*fs);
+
+    MkdirCommand command("/dir1/dir9");
     command.execute(*fs);
+    lsCommand.execute(*fs);
+
+    MkdirCommand command2("dir1/dir2");
+    command.execute(*fs);
+    lsCommand.execute(*fs);
+
+    MkdirCommand command3("dir1/dir2/../dir8");
+    command3.execute(*fs);
+    lsCommand.execute(*fs);
+
+    MkdirCommand command1("dir1/dir2/dir10/dir11");
+    command1.execute(*fs);
+    lsCommand.execute(*fs);
 
     return 0;
 }
