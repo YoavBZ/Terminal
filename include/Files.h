@@ -66,6 +66,7 @@ public:
     Directory &operator=(const Directory &other); // Copy assignment operator
     Directory &operator=(Directory &&other); // Move assignment operator
     bool isFile(); // added
+    bool nameExist(string name);
 };
 
 #endif

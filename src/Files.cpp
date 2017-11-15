@@ -33,6 +33,7 @@ string File::toString() {
     return "FILE\t" + getName() + "\t" + to_string(size);
 }
 
+
 // ** Directory **
 Directory::Directory(string name, Directory *parent) : BaseFile(name), children(), parent(parent) {}
 
@@ -66,10 +67,14 @@ void Directory::removeFile(string name) {
 }
 
 void Directory::removeFile(BaseFile *file) {
-    if (!file->isFile())
-        ((Directory *) file)->clean();
     delete file;
-    children.erase(remove(children.begin(), children.end(), file), children.end());
+    int i = 0;
+    for (BaseFile *baseFile: children) {
+        if (baseFile == file)
+            break;
+        i++;
+    }
+    children.erase(children.begin() + i);
 }
 
 string Directory::getAbsolutePath() {
@@ -125,7 +130,7 @@ Directory::Directory(Directory &&other) : BaseFile(other.getName()), children(),
 void Directory::clean() {
     parent = nullptr;
     for (BaseFile *baseFile: children) {
-        removeFile(baseFile);
+        delete baseFile;
     }
     children.clear();
 
@@ -134,7 +139,7 @@ void Directory::clean() {
 void Directory::copyChildren(const Directory &other) {
     for (BaseFile *baseFile: other.children) {
         if (baseFile->isFile()) {
-            BaseFile *copy = new File(baseFile->getName(), baseFile->getSize());
+            BaseFile *copy = new File((File &) *baseFile);
             addFile(copy);
         } else {
             BaseFile *copy = new Directory((Directory &) *baseFile);
@@ -168,7 +173,6 @@ Directory &Directory::operator=(Directory &&other) {
         for (BaseFile *baseFile: other.children) {
             addFile(baseFile);
         }
-        other.setName(nullptr);
         other.setParent(nullptr);
         other.getChildren().clear();
     }
@@ -180,14 +184,17 @@ Directory::~Directory() {
     // verbose
     if (verbose == 1 || verbose == 3)
         cout << "Directory::~Directory()" << endl;
-    parent = nullptr;
-    int size = children.size();
-    for (int i = 0; i < size; i++) {
-        removeFile(children[0]);
-    }
-    children.clear();
+    clean();
 }
 
 string Directory::toString() {
     return "DIR\t"+getName()+"\t"+ to_string(getSize());
+}
+
+bool Directory::nameExist(string name) {
+    for (BaseFile *baseFile: children) {
+        if (baseFile->getName() == name)
+            return true;
+    }
+    return false;
 }

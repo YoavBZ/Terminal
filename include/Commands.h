@@ -21,7 +21,7 @@ public:
 protected:
     vector<string> parseArgs(string args, char delimiter);
 
-    Directory *getPath(Directory *rootDir, Directory *currentDir, string path);
+    BaseFile *getPointer(Directory *rootDir, Directory *currentDir, string path);
 };
 
 class PwdCommand : public BaseCommand {
