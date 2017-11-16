@@ -26,25 +26,7 @@ int main(int, char **) {
     Directory *dir2 = new Directory("dir2", dir1);
     dir1->addFile(dir2);
 
-    cout << rootDir.getSize() << endl;
-    LsCommand lsCommand("dir1");
-    lsCommand.execute(*fs);
-
-    MkdirCommand command("/dir1/dir9");
-    command.execute(*fs);
-    lsCommand.execute(*fs);
-
-    MkdirCommand command2("dir1/dir2");
-    command.execute(*fs);
-    lsCommand.execute(*fs);
-
-    MkdirCommand command3("dir1/dir2/../dir8");
-    command3.execute(*fs);
-    lsCommand.execute(*fs);
-
-    MkdirCommand command1("dir1/dir2/dir10/dir11");
-    command1.execute(*fs);
-    lsCommand.execute(*fs);
+    rootDir.removeChildPointer(1);
 
     return 0;
 }

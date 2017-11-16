@@ -17,16 +17,25 @@ Environment::Environment() : commandsHistory(), fs() {}
 
 void Environment::start() {
     string input = "";
+    string command;
+    string args;
     while (input != "exit") {
-        cin >> input;
-        int firstSpace = input.find(" ");
-        string command = input.substr(0, firstSpace - 1);
-        string args = input.substr(firstSpace, input.size() - firstSpace - 1);
+        getline(cin, input);
+        int firstSpace = input.find(' ');
+        if (firstSpace != -1) {
+            command = input.substr(0, firstSpace);
+            args = input.substr(firstSpace + 1, input.size() - firstSpace - 1);
+        } else {
+            command = input;
+            args = "";
+        }
         BaseCommand *baseCommand;
         if (command == "pwd")
             baseCommand = new PwdCommand(args);
         else if (command == "cd")
             baseCommand = new CdCommand(args);
+        else if (command == "ls")
+            baseCommand = new LsCommand(args);
         else if (command == "mkdir")
             baseCommand = new MkdirCommand(args);
         else if (command == "mkfile")

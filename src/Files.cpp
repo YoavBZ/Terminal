@@ -43,7 +43,7 @@ void Directory::setParent(Directory *newParent) {
     parent = newParent;
 }
 
-vector<BaseFile *> Directory::getChildren() const { return children; }
+vector<BaseFile *> Directory::getChildren() { return children; }
 
 int Directory::getSize() const {
     int totalSize = 0;
@@ -74,7 +74,11 @@ void Directory::removeFile(BaseFile *file) {
             break;
         i++;
     }
-    children.erase(children.begin() + i);
+    removeChildPointer(i);
+}
+
+void Directory::removeChildPointer(int index) {
+    children.erase(children.begin() + index);
 }
 
 string Directory::getAbsolutePath() {

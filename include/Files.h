@@ -52,9 +52,10 @@ public:
     void addFile(BaseFile *file); // Add the file to children
     void removeFile(string name); // Remove the file with the specified name from children
     void removeFile(BaseFile *file); // Remove the file from children
+    void removeChildPointer(int index);
     void sortByName(); // Sort children by name alphabetically (not recursively)
     void sortBySize(); // Sort children by size (not recursively)
-    vector<BaseFile *> getChildren() const; // Return children
+    vector<BaseFile *> getChildren(); // Return children
     int getSize() const; // Return the size of the directory (recursively)
     string getAbsolutePath();//Return the path from the root to this
     string getAbsolutePathR();
