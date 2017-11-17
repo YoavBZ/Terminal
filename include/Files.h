@@ -52,7 +52,7 @@ public:
     void addFile(BaseFile *file); // Add the file to children
     void removeFile(string name); // Remove the file with the specified name from children
     void removeFile(BaseFile *file); // Remove the file from children
-    void removeChildPointer(int index);
+    void removeChildPointer(int i);
     void sortByName(); // Sort children by name alphabetically (not recursively)
     void sortBySize(); // Sort children by size (not recursively)
     vector<BaseFile *> getChildren(); // Return children

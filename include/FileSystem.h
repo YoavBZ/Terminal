@@ -13,8 +13,11 @@ public:
 	Directory& getRootDirectory() const; // Return reference to the root directory
 	Directory& getWorkingDirectory() const; // Return reference to the working directory
 	void setWorkingDirectory(Directory *newWorkingDirectory); // Change the working directory of the file system
-
-
+	FileSystem (const FileSystem& other);// Copy constructor
+	FileSystem (FileSystem &&other);// Move constructor
+	FileSystem &operator=(const FileSystem &other);// Copy assignment operator
+	FileSystem &operator=(FileSystem &&other);// Move assignment operator
+	~FileSystem();
 };
 
 

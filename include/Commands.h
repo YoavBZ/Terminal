@@ -18,6 +18,8 @@ public:
 
     virtual string toString() = 0;
 
+    virtual ~BaseCommand();
+
 protected:
     vector<string> parseArgs(string args, char delimiter);
 

@@ -5,7 +5,7 @@
 using namespace std;
 
 #include <string>
-
+#include "../include/GlobalVariables.h"
 #include <algorithm>
 #include <iostream>
 #include "../include/FileSystem.h"
@@ -19,4 +19,52 @@ Directory &FileSystem::getWorkingDirectory() const { return *workingDirectory; }
 
 void FileSystem::setWorkingDirectory(Directory *newWorkingDirectory) {
     workingDirectory = newWorkingDirectory;
+}
+
+FileSystem::FileSystem(const FileSystem &other) :rootDirectory(new Directory(*other.rootDirectory)){
+    if (verbose == 1 || verbose == 3)
+        cout << "FileSystem::FileSystem(const FileSystem &other)" << endl;
+}
+
+FileSystem::FileSystem(FileSystem &&other): rootDirectory(other.rootDirectory) , workingDirectory(other.workingDirectory){
+    if (verbose == 1 || verbose == 3)
+        cout << "FileSystem::FileSystem(FileSystem &&other)" << endl;
+    other.workingDirectory=nullptr;
+    other.rootDirectory= nullptr;
+}
+
+FileSystem& FileSystem::operator=(const FileSystem &other) {
+    if (verbose == 1 || verbose == 3)
+        cout << "FileSystem& FileSystem::operator=(const FileSystem &other)" << endl;
+    if (this != &other) {
+        delete rootDirectory;
+        rootDirectory= nullptr;
+        workingDirectory = nullptr;
+        *rootDirectory=*other.rootDirectory;
+
+
+    }
+    return *this;
+}
+
+FileSystem& FileSystem::operator=(FileSystem &&other) {
+    if (verbose == 1 || verbose == 3)
+        cout << "FileSystem& FileSystem::operator=(FileSystem &&other)" << endl;
+    if (this != &other) {
+        delete rootDirectory;
+        rootDirectory= nullptr;
+        workingDirectory= nullptr;
+        rootDirectory=other.rootDirectory;
+        workingDirectory=other.workingDirectory;
+        other.workingDirectory= nullptr;
+        other.rootDirectory= nullptr;
+    }
+    return *this;
+}
+
+FileSystem::~FileSystem() {
+    if (verbose == 1 || verbose == 3)
+        cout << "FileSystem::~FileSystem()" << endl;
+    delete rootDirectory;
+    workingDirectory= nullptr;
 }

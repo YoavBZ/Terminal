@@ -192,7 +192,7 @@ Directory::~Directory() {
 }
 
 string Directory::toString() {
-    return "DIR\t"+getName()+"\t"+ to_string(getSize());
+    return "DIR\t" + getName() + "\t" + to_string(getSize());
 }
 
 bool Directory::nameExist(string name) {

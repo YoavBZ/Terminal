@@ -25,7 +25,7 @@ vector<string> BaseCommand::parseArgs(string args, char delimiter) {
 
 BaseFile *BaseCommand::getPointer(Directory *rootDir, Directory *currentDir, string path) {
     vector<string> parsePath = parseArgs(path, '/');
-    int i = 0;
+    unsigned int i = 0;
     if (parsePath[0] == "") {
         if (parsePath.size() == 1)
             return currentDir;
@@ -34,7 +34,7 @@ BaseFile *BaseCommand::getPointer(Directory *rootDir, Directory *currentDir, str
         i++;
         currentDir = rootDir;
     }
-    for (i; i < parsePath.size(); i++) {
+    for (; i < parsePath.size(); i++) {
         if (parsePath[i] == "..") {
             if (currentDir->getParent() == nullptr)
                 return nullptr;
@@ -58,6 +58,8 @@ BaseFile *BaseCommand::getPointer(Directory *rootDir, Directory *currentDir, str
     }
     return currentDir;
 }
+
+BaseCommand::~BaseCommand() {}
 
 // PwdCommand
 PwdCommand::PwdCommand(string args) : BaseCommand(args) {}
@@ -114,7 +116,7 @@ MkdirCommand::MkdirCommand(string args) : BaseCommand(args) {}
 void MkdirCommand::execute(FileSystem &fs) {
     vector<string> path = parseArgs(getArgs(), '/');
 
-    int i = 0;
+    unsigned int i = 0;
     Directory *currentDir = &fs.getWorkingDirectory();
     if (path[0] == "") {
         if (path.size() == 1) {
@@ -128,7 +130,7 @@ void MkdirCommand::execute(FileSystem &fs) {
         i++;
         currentDir = &fs.getRootDirectory();
     }
-    for (i; i < path.size(); i++) {
+    for (; i < path.size(); i++) {
         if (path[i] == "..") {
             if (currentDir->getParent() == nullptr) {
                 cout << "The system cannot find the path specified" << endl;
@@ -157,7 +159,7 @@ void MkdirCommand::execute(FileSystem &fs) {
         cout << "The directory already exists" << endl;
         return;
     }
-    for (i; i < path.size(); i++) {
+    for (; i < path.size(); i++) {
         if (path[i] == "..") {
             cout << "The system cannot find the path specified" << endl;
             return;
@@ -359,11 +361,11 @@ string VerboseCommand::toString() { return "verbose"; }
 ErrorCommand::ErrorCommand(string args) : BaseCommand(args) {}
 
 void ErrorCommand::execute(FileSystem &fs) {
-    cout << getArgs().substr(0, getArgs().find(" ") - 1) + ": " + "Unknown command" << endl;
+    cout << getArgs().substr(0, getArgs().find(' ') - 1) + ": " + "Unknown command" << endl;
 }
 
 string ErrorCommand::toString() {
-    return getArgs().substr(0, getArgs().find(" ") - 1);
+    return getArgs().substr(0, getArgs().find(' ') - 1);
 }
 
 // ExecCommand
