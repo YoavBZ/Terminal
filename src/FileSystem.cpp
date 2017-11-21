@@ -11,7 +11,7 @@ using namespace std;
 #include "../include/Commands.h"
 
 // FileSystem
-FileSystem::FileSystem() : rootDirectory(new Directory("root", nullptr)), workingDirectory(rootDirectory) {}
+FileSystem::FileSystem() : rootDirectory(new Directory("/", nullptr)), workingDirectory(rootDirectory) {}
 
 Directory &FileSystem::getRootDirectory() const { return *rootDirectory; }
 
@@ -24,7 +24,7 @@ void FileSystem::setWorkingDirectory(Directory *newWorkingDirectory) {
 FileSystem::FileSystem(const FileSystem &other) : rootDirectory(new Directory(*other.rootDirectory)), workingDirectory(
         nullptr) {
     workingDirectory = (Directory *) BaseCommand::getPointer(rootDirectory, nullptr,
-                                                             other.workingDirectory->getAbsolutePathR());
+                                                             other.workingDirectory->getRecursivePath());
     if (verbose == 1 || verbose == 3)
         cout << "FileSystem::FileSystem(const FileSystem &other)" << endl;
 }
@@ -44,7 +44,7 @@ FileSystem &FileSystem::operator=(const FileSystem &other) {
         delete rootDirectory;
         *rootDirectory = *other.rootDirectory;
         workingDirectory = (Directory *) BaseCommand::getPointer(rootDirectory, nullptr,
-                                                                 other.workingDirectory->getAbsolutePathR());
+                                                                 other.workingDirectory->getRecursivePath());
     }
     return *this;
 }

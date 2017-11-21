@@ -82,17 +82,16 @@ void Directory::removeChildPointer(int index) {
 }
 
 string Directory::getAbsolutePath() {
-    string path = getAbsolutePathR();
+    string path = getRecursivePath();
     if (path.empty())
         return "/";
     return path;
 }
 
-string Directory::getAbsolutePathR() {
-    if (!parent) {
+string Directory::getRecursivePath() {
+    if (!parent)
         return "";
-    }
-    return parent->getAbsolutePathR() + "/" + getName();
+    return parent->getRecursivePath() + "/" + getName();
 }
 
 bool nameCompare(const BaseFile *a, const BaseFile *b) {
@@ -122,7 +121,6 @@ Directory::Directory(const Directory &other) : BaseFile(other.getName()), childr
 Directory::Directory(Directory &&other) : BaseFile(other.getName()), children(), parent(nullptr) {
     if (verbose == 1 || verbose == 3)
         cout << "Directory::Directory(Directory &&other)" << endl;
-
     steal(other);
     other.setParent(nullptr);
 }

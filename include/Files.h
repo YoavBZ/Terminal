@@ -59,7 +59,7 @@ public:
     vector<BaseFile *> getChildren(); // Return children
     int getSize() const; // Return the size of the directory (recursively)
     string getAbsolutePath();//Return the path from the root to this
-    string getAbsolutePathR();
+    string getRecursivePath();
 
     virtual string toString();
 

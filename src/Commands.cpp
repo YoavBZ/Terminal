@@ -179,7 +179,7 @@ void MkfileCommand::execute(FileSystem &fs) {
     vector<string> arguments = parseArgs(getArgs(), ' ');
     vector<string> path = parseArgs(arguments[0], '/');
     string name = path[path.size() - 1];
-    string dirPath = arguments[0].substr(0, arguments[0].find(name));
+    string dirPath = arguments[0].substr(0, arguments[0].size() - name.size());
     BaseFile *dir = getPointer(&fs.getRootDirectory(), &fs.getWorkingDirectory(),
                                dirPath.substr(0, dirPath.size() - 1));
     if (dir == nullptr || dir->isFile()) {
@@ -218,10 +218,10 @@ void CpCommand::execute(FileSystem &fs) {
         }
     }
     if (toCopy->isFile())
-        ((Directory *) destinationPath)->addFile(new File((File&)*toCopy));
+        ((Directory *) destinationPath)->addFile(new File((File &) *toCopy));
     else {
         ((Directory *) destinationPath)->addFile(new Directory((Directory &) *toCopy));
-        ((Directory*)toCopy)->setParent((Directory*)destinationPath);
+        ((Directory *) toCopy)->setParent((Directory *) destinationPath);
     }
 
 }
@@ -233,23 +233,25 @@ MvCommand::MvCommand(string args) : BaseCommand(args) {}
 
 void MvCommand::execute(FileSystem &fs) {
     vector<string> parse = parseArgs(getArgs(), ' ');
-    BaseFile *destinationPath = getPointer(&fs.getRootDirectory(), &fs.getWorkingDirectory(), parse[1]);
+    Directory *root = &fs.getRootDirectory();
+    Directory *workingDirectory = &fs.getWorkingDirectory();
+    BaseFile *destinationPath = getPointer(root, workingDirectory, parse[1]);
     if (destinationPath == nullptr || destinationPath->isFile()) {
         cout << "No such file or directory" << endl;
         return;
     }
-    BaseFile *toMove = getPointer(&fs.getRootDirectory(), &fs.getWorkingDirectory(), parse[0]);
+    BaseFile *toMove = getPointer(root, workingDirectory, parse[0]);
     if (toMove == nullptr) {
         cout << "No such file or directory" << endl;
         return;
     }
-    if (toMove == &fs.getWorkingDirectory() || toMove == &fs.getRootDirectory()) {
+    if (!toMove->isFile() && workingDirectory->getAbsolutePath().find(((Directory *) toMove)->getAbsolutePath()) == 0) {
+        // Checks whether toMove is pointed workingDirectory or any parent of workingDirectory (including root)
         cout << "Can't move directory" << endl;
         return;
     }
-    string toMovePath = parse[0].substr(0, parse[0].find(toMove->getName()));
-    BaseFile *parent = getPointer(&fs.getRootDirectory(), &fs.getWorkingDirectory(),
-                                  toMovePath.substr(0, toMovePath.size() - 1));
+    string toMoveParentPath = parse[0].substr(0, parse[0].find(toMove->getName()));
+    BaseFile *parent = getPointer(root, workingDirectory, toMoveParentPath.substr(0, toMoveParentPath.size() - 1));
     int i = 0;
     for (BaseFile *baseFile:((Directory *) parent)->getChildren()) {
         if (baseFile == toMove)
@@ -349,8 +351,8 @@ string HistoryCommand::toString() { return "history"; }
 VerboseCommand::VerboseCommand(string args) : BaseCommand(args) {}
 
 void VerboseCommand::execute(FileSystem &fs) {
-    if (getArgs()=="0")
-        verbose=0;
+    if (getArgs() == "0")
+        verbose = 0;
     else if (getArgs() == "1")
         verbose = 1;
     else if (getArgs() == "2")

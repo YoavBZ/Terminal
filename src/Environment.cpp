@@ -20,6 +20,7 @@ void Environment::start() {
     string command;
     string args;
     while (input != "exit") {
+        cout << fs.getWorkingDirectory().getName() + '>';
         getline(cin, input);
         int firstSpace = input.find(' ');
         if (firstSpace != -1) {
