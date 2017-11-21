@@ -99,10 +99,10 @@ void LsCommand::execute(FileSystem &fs) {
         cout << "The system cannot find the path specified" << endl;
         return;
     }
-    if (parse[0] == "-s")
+    ((Directory *) dir)->sortByName();
+    if (parse[0] == "-s") {
         ((Directory *) dir)->sortBySize();
-    else
-        ((Directory *) dir)->sortByName();
+    }
     for (BaseFile *baseFile: ((Directory *) dir)->getChildren()) {
         cout << baseFile->toString() << endl;
     }
@@ -218,9 +218,10 @@ void CpCommand::execute(FileSystem &fs) {
         }
     }
     if (toCopy->isFile())
-        ((Directory *) destinationPath)->addFile(toCopy);
+        ((Directory *) destinationPath)->addFile(new File((File&)*toCopy));
     else {
         ((Directory *) destinationPath)->addFile(new Directory((Directory &) *toCopy));
+        ((Directory*)toCopy)->setParent((Directory*)destinationPath);
     }
 
 }
@@ -333,7 +334,10 @@ HistoryCommand::HistoryCommand(string args, const vector<BaseCommand *> &history
 void HistoryCommand::execute(FileSystem &fs) {
     int i = 0;
     for (BaseCommand *baseCommand: history) {
-        cout << to_string(i) + "\t" + baseCommand->toString() + " " + baseCommand->getArgs() << endl;
+        if (baseCommand->toString() == "error")
+            cout << to_string(i) + "\t" + baseCommand->getArgs() << endl;
+        else
+            cout << to_string(i) + "\t" + baseCommand->toString() + " " + baseCommand->getArgs() << endl;
         i++;
     }
 
@@ -345,14 +349,16 @@ string HistoryCommand::toString() { return "history"; }
 VerboseCommand::VerboseCommand(string args) : BaseCommand(args) {}
 
 void VerboseCommand::execute(FileSystem &fs) {
-    if (getArgs() == "1")
+    if (getArgs()=="0")
+        verbose=0;
+    else if (getArgs() == "1")
         verbose = 1;
     else if (getArgs() == "2")
         verbose = 2;
     else if (getArgs() == "3")
         verbose = 3;
     else
-        cout << "Wrong verbose inpute" << endl;
+        cout << "Wrong verbose input" << endl;
 }
 
 string VerboseCommand::toString() { return "verbose"; }
@@ -365,7 +371,7 @@ void ErrorCommand::execute(FileSystem &fs) {
 }
 
 string ErrorCommand::toString() {
-    return getArgs().substr(0, getArgs().find(' ') - 1);
+    return "error";
 }
 
 // ExecCommand

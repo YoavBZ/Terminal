@@ -15,6 +15,7 @@ private:
 	FileSystem fs;
 	void copyCommands(const Environment &other);
 	void clean();
+	void steal(Environment &other);
 
 public:
 	Environment();

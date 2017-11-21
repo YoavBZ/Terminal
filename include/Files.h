@@ -21,6 +21,7 @@ public:
 
     virtual bool isFile() =0; //added
     virtual ~BaseFile();
+
     virtual string toString()=0;
 };
 
@@ -39,13 +40,12 @@ class Directory : public BaseFile {
 private:
     vector<BaseFile *> children;
     Directory *parent;
-
-    //clean
     void clean();
-
+    void steal(Directory &other);
     void copyChildren(const Directory &other); //deep copy of children
 
 public:
+
     Directory(string name, Directory *parent); // Constructor
     Directory *getParent() const; // Return a pointer to the parent of this directory
     void setParent(Directory *newParent); // Change the parent of this directory
@@ -53,19 +53,23 @@ public:
     void removeFile(string name); // Remove the file with the specified name from children
     void removeFile(BaseFile *file); // Remove the file from children
     void removeChildPointer(int i);
+
     void sortByName(); // Sort children by name alphabetically (not recursively)
     void sortBySize(); // Sort children by size (not recursively)
     vector<BaseFile *> getChildren(); // Return children
     int getSize() const; // Return the size of the directory (recursively)
     string getAbsolutePath();//Return the path from the root to this
     string getAbsolutePathR();
-    virtual  string toString();
+
+    virtual string toString();
+
     // Rule of 5
     virtual ~Directory(); // Distructor
     Directory(const Directory &other); // Copy constructor
     Directory(Directory &&other); // Move constructor
     Directory &operator=(const Directory &other); // Copy assignment operator
     Directory &operator=(Directory &&other); // Move assignment operator
+
     bool isFile(); // added
     bool nameExist(string name);
 };

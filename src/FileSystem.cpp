@@ -6,9 +6,9 @@ using namespace std;
 
 #include <string>
 #include "../include/GlobalVariables.h"
-#include <algorithm>
 #include <iostream>
 #include "../include/FileSystem.h"
+#include "../include/Commands.h"
 
 // FileSystem
 FileSystem::FileSystem() : rootDirectory(new Directory("root", nullptr)), workingDirectory(rootDirectory) {}
@@ -21,43 +21,45 @@ void FileSystem::setWorkingDirectory(Directory *newWorkingDirectory) {
     workingDirectory = newWorkingDirectory;
 }
 
-FileSystem::FileSystem(const FileSystem &other) :rootDirectory(new Directory(*other.rootDirectory)){
+FileSystem::FileSystem(const FileSystem &other) : rootDirectory(new Directory(*other.rootDirectory)), workingDirectory(
+        nullptr) {
+    workingDirectory = (Directory *) BaseCommand::getPointer(rootDirectory, nullptr,
+                                                             other.workingDirectory->getAbsolutePathR());
     if (verbose == 1 || verbose == 3)
         cout << "FileSystem::FileSystem(const FileSystem &other)" << endl;
 }
 
-FileSystem::FileSystem(FileSystem &&other): rootDirectory(other.rootDirectory) , workingDirectory(other.workingDirectory){
+FileSystem::FileSystem(FileSystem &&other) : rootDirectory(other.rootDirectory),
+                                             workingDirectory(other.workingDirectory) {
     if (verbose == 1 || verbose == 3)
         cout << "FileSystem::FileSystem(FileSystem &&other)" << endl;
-    other.workingDirectory=nullptr;
-    other.rootDirectory= nullptr;
+    other.workingDirectory = nullptr;
+    other.rootDirectory = nullptr;
 }
 
-FileSystem& FileSystem::operator=(const FileSystem &other) {
+FileSystem &FileSystem::operator=(const FileSystem &other) {
     if (verbose == 1 || verbose == 3)
         cout << "FileSystem& FileSystem::operator=(const FileSystem &other)" << endl;
     if (this != &other) {
         delete rootDirectory;
-        rootDirectory= nullptr;
-        workingDirectory = nullptr;
-        *rootDirectory=*other.rootDirectory;
-
-
+        *rootDirectory = *other.rootDirectory;
+        workingDirectory = (Directory *) BaseCommand::getPointer(rootDirectory, nullptr,
+                                                                 other.workingDirectory->getAbsolutePathR());
     }
     return *this;
 }
 
-FileSystem& FileSystem::operator=(FileSystem &&other) {
+FileSystem &FileSystem::operator=(FileSystem &&other) {
     if (verbose == 1 || verbose == 3)
         cout << "FileSystem& FileSystem::operator=(FileSystem &&other)" << endl;
     if (this != &other) {
         delete rootDirectory;
-        rootDirectory= nullptr;
-        workingDirectory= nullptr;
-        rootDirectory=other.rootDirectory;
-        workingDirectory=other.workingDirectory;
-        other.workingDirectory= nullptr;
-        other.rootDirectory= nullptr;
+        rootDirectory = nullptr;
+        workingDirectory = nullptr;
+        rootDirectory = other.rootDirectory;
+        workingDirectory = other.workingDirectory;
+        other.workingDirectory = nullptr;
+        other.rootDirectory = nullptr;
     }
     return *this;
 }
@@ -66,5 +68,5 @@ FileSystem::~FileSystem() {
     if (verbose == 1 || verbose == 3)
         cout << "FileSystem::~FileSystem()" << endl;
     delete rootDirectory;
-    workingDirectory= nullptr;
+    workingDirectory = nullptr;
 }

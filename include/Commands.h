@@ -20,10 +20,9 @@ public:
 
     virtual ~BaseCommand();
 
-protected:
-    vector<string> parseArgs(string args, char delimiter);
+    static vector<string> parseArgs(string args, char delimiter);
 
-    BaseFile *getPointer(Directory *rootDir, Directory *currentDir, string path);
+    static BaseFile *getPointer(Directory *rootDir, Directory *currentDir, string path);
 };
 
 class PwdCommand : public BaseCommand {

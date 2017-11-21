@@ -113,21 +113,18 @@ void Directory::sortBySize() {
 
 bool Directory::isFile() { return false; }
 
-Directory::Directory(const Directory &other) : BaseFile(other.getName()), children(), parent(other.getParent()) {
+Directory::Directory(const Directory &other) : BaseFile(other.getName()), children(), parent(nullptr) {
     if (verbose == 1 || verbose == 3)
         cout << "Directory::Directory(const Directory &other)" << endl;
     copyChildren(other);
 }
 
-Directory::Directory(Directory &&other) : BaseFile(other.getName()), children(), parent(other.getParent()) {
+Directory::Directory(Directory &&other) : BaseFile(other.getName()), children(), parent(nullptr) {
     if (verbose == 1 || verbose == 3)
         cout << "Directory::Directory(Directory &&other)" << endl;
 
-    for (BaseFile *baseFile: other.children) {
-        addFile(baseFile);
-    }
+    steal(other);
     other.setParent(nullptr);
-    other.getChildren().clear();
 }
 
 
@@ -158,12 +155,18 @@ Directory &Directory::operator=(const Directory &other) {
         cout << "Directory &Directory::operator=(Directory &other)" << endl;
     if (this != &other) {
         clean();
-        parent = other.getParent();
         setName(other.getName());
         copyChildren(other);
     }
 
     return *this;
+}
+
+void Directory::steal(Directory &other) {
+    for (BaseFile *baseFile: other.children) {
+        addFile(baseFile);
+    }
+    other.getChildren().clear();
 }
 
 Directory &Directory::operator=(Directory &&other) {
@@ -173,12 +176,8 @@ Directory &Directory::operator=(Directory &&other) {
     if (this != &other) {
         clean();
         setName(other.getName());
-        parent = other.getParent();
-        for (BaseFile *baseFile: other.children) {
-            addFile(baseFile);
-        }
+        steal(other);
         other.setParent(nullptr);
-        other.getChildren().clear();
     }
 
     return *this;

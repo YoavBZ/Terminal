@@ -120,27 +120,34 @@ void Environment::copyCommands(const Environment &other) {
 Environment::Environment(Environment &&other):commandsHistory(),fs(other.fs) {
     if (verbose == 1 || verbose == 3)
         cout << "Environment::Environment(Environment &&other)" << endl;
-    for (BaseCommand* baseCommand: other.commandsHistory){
-        commandsHistory.push_back(baseCommand);
-    }
-    other.commandsHistory.clear();
+    steal(other);
 }
 
 Environment& Environment::operator=(const Environment &other) {
     if (verbose == 1 || verbose == 3)
         cout << "Environment& Environment::operator=(const Environment &other)" << endl;
-    fs=other.fs;
-    clean();
-    copyCommands(other);
+    if (this!=&other) {
+        fs = other.fs;
+        clean();
+        copyCommands(other);
+    }
+    return *this;
 
 }
 
 Environment& Environment::operator=(Environment &&other) {
     if (verbose == 1 || verbose == 3)
         cout << "Environment& Environment::operator=(Environment &&other)" << endl;
-    fs=other.getFileSystem();
-    clean();
-    for (BaseCommand* baseCommand: other.commandsHistory){
+    if (this!=&other) {
+        fs = other.getFileSystem();
+        clean();
+        steal(other);
+    }
+    return *this;
+}
+
+void Environment::steal(Environment &other) {
+    for (BaseCommand *baseCommand: other.commandsHistory) {
         commandsHistory.push_back(baseCommand);
     }
     other.commandsHistory.clear();
@@ -150,6 +157,7 @@ void Environment::clean() {
     for (BaseCommand* baseCommand:commandsHistory){
         delete baseCommand;
     }
+    commandsHistory.clear();
 }
 
 Environment::~Environment() {
