@@ -41,7 +41,6 @@ FileSystem &FileSystem::operator=(const FileSystem &other) {
     if (verbose == 1 || verbose == 3)
         cout << "FileSystem& FileSystem::operator=(const FileSystem &other)" << endl;
     if (this != &other) {
-        delete rootDirectory;
         *rootDirectory = *other.rootDirectory;
         workingDirectory = (Directory *) BaseCommand::getPointer(rootDirectory, nullptr,
                                                                  other.workingDirectory->getRecursivePath());
@@ -68,5 +67,4 @@ FileSystem::~FileSystem() {
     if (verbose == 1 || verbose == 3)
         cout << "FileSystem::~FileSystem()" << endl;
     delete rootDirectory;
-    workingDirectory = nullptr;
 }

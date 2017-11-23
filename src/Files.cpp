@@ -18,7 +18,7 @@ void BaseFile::setName(string newName) {
     name = newName;
 }
 
-BaseFile::~BaseFile() {}
+BaseFile::~BaseFile() = default;
 
 // ** File **
 File::File(string name, int size) : BaseFile(name), size(size) {}
@@ -142,9 +142,9 @@ void Directory::copyChildren(const Directory &other) {
             addFile(copy);
         } else {
             BaseFile *copy = new Directory((Directory &) *baseFile);
+            ((Directory *) copy)->setParent(this);
             addFile(copy);
         }
-
     }
 }
 
@@ -162,9 +162,11 @@ Directory &Directory::operator=(const Directory &other) {
 
 void Directory::steal(Directory &other) {
     for (BaseFile *baseFile: other.children) {
+        if (!baseFile->isFile())
+            ((Directory*)baseFile)->setParent(this);
         addFile(baseFile);
     }
-    other.getChildren().clear();
+    other.children.clear();
 }
 
 Directory &Directory::operator=(Directory &&other) {

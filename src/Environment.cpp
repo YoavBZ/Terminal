@@ -20,7 +20,7 @@ void Environment::start() {
     string command;
     string args;
     while (input != "exit") {
-        cout << fs.getWorkingDirectory().getName() + '>';
+        cout << fs.getWorkingDirectory().getAbsolutePath() + '>';
         getline(cin, input);
         int firstSpace = input.find(' ');
         if (firstSpace != -1) {
@@ -59,10 +59,11 @@ void Environment::start() {
             baseCommand = new ExecCommand(args, commandsHistory);
         else
             baseCommand = new ErrorCommand(input);
+        if (verbose == 2 || verbose == 3) {
+            cout << input << endl;
+        }
         baseCommand->execute(fs);
         addToHistory(baseCommand);
-        if (verbose == 2 || verbose == 3)
-            cout << input << endl;
     }
 
 }
@@ -79,15 +80,15 @@ const vector<BaseCommand *> &Environment::getHistory() const {
     return commandsHistory;
 }
 
-Environment::Environment(const Environment &other):commandsHistory(), fs(other.fs) {
+Environment::Environment(const Environment &other) : commandsHistory(), fs(other.fs) {
     if (verbose == 1 || verbose == 3)
         cout << "Environment::Environment(const Environment &other)" << endl;
     copyCommands(other);
 }
 
 void Environment::copyCommands(const Environment &other) {
-    for (BaseCommand* baseCommand:other.commandsHistory){
-        string tostring=baseCommand->toString();
+    for (BaseCommand *baseCommand:other.commandsHistory) {
+        string tostring = baseCommand->toString();
         if (tostring == "pwd")
             commandsHistory.push_back(new PwdCommand(baseCommand->getArgs()));
         else if (tostring == "cd")
@@ -107,27 +108,27 @@ void Environment::copyCommands(const Environment &other) {
         else if (tostring == "rm")
             commandsHistory.push_back(new RmCommand(baseCommand->getArgs()));
         else if (tostring == "history")
-            commandsHistory.push_back(new HistoryCommand(baseCommand->getArgs(),other.commandsHistory));
+            commandsHistory.push_back(new HistoryCommand(baseCommand->getArgs(), other.commandsHistory));
         else if (tostring == "verbose")
             commandsHistory.push_back(new VerboseCommand(baseCommand->getArgs()));
         else if (tostring == "exec")
-            commandsHistory.push_back(new ExecCommand(baseCommand->getArgs(),other.commandsHistory));
+            commandsHistory.push_back(new ExecCommand(baseCommand->getArgs(), other.commandsHistory));
         else
             commandsHistory.push_back(new ErrorCommand(baseCommand->getArgs()));
 
     }
 }
 
-Environment::Environment(Environment &&other):commandsHistory(),fs(other.fs) {
+Environment::Environment(Environment &&other) : commandsHistory(), fs(other.fs) {
     if (verbose == 1 || verbose == 3)
         cout << "Environment::Environment(Environment &&other)" << endl;
     steal(other);
 }
 
-Environment& Environment::operator=(const Environment &other) {
+Environment &Environment::operator=(const Environment &other) {
     if (verbose == 1 || verbose == 3)
         cout << "Environment& Environment::operator=(const Environment &other)" << endl;
-    if (this!=&other) {
+    if (this != &other) {
         fs = other.fs;
         clean();
         copyCommands(other);
@@ -136,10 +137,10 @@ Environment& Environment::operator=(const Environment &other) {
 
 }
 
-Environment& Environment::operator=(Environment &&other) {
+Environment &Environment::operator=(Environment &&other) {
     if (verbose == 1 || verbose == 3)
         cout << "Environment& Environment::operator=(Environment &&other)" << endl;
-    if (this!=&other) {
+    if (this != &other) {
         fs = other.getFileSystem();
         clean();
         steal(other);
@@ -155,7 +156,7 @@ void Environment::steal(Environment &other) {
 }
 
 void Environment::clean() {
-    for (BaseCommand* baseCommand:commandsHistory){
+    for (BaseCommand *baseCommand:commandsHistory) {
         delete baseCommand;
     }
     commandsHistory.clear();
@@ -165,5 +166,4 @@ Environment::~Environment() {
     if (verbose == 1 || verbose == 3)
         cout << "Environment::~Environment()" << endl;
     clean();
-    commandsHistory.clear();
 }

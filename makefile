@@ -19,4 +19,4 @@ bin/Main.o: src/Main.cpp
 	g++ -g -Wall -Weffc++ -std=c++11 -c -Iinclude -o bin/Main.o src/Main.cpp
 
 clean:
-	rm bin/*.o
+	rm bin/*
