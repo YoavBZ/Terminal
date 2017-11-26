@@ -20,7 +20,7 @@ public:
 
     virtual ~BaseCommand();
 
-    static vector<string> parseArgs(string args, char delimiter);
+    static vector<string> split(string args, char delimiter);
 
     static BaseFile *getPointer(Directory *rootDir, Directory *currentDir, string path);
 };

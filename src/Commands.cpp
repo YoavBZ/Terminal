@@ -11,20 +11,20 @@ BaseCommand::BaseCommand(string args) : args(args) {}
 
 string BaseCommand::getArgs() { return args; }
 
-vector<string> BaseCommand::parseArgs(string args, char delimiter) {
+vector<string> BaseCommand::split(string str, char delimiter) {//return vector represent the splited string according to the delimiter recived
     vector<string> parsed;
-    size_t found = args.find(delimiter);
+    size_t found = str.find(delimiter);
     while (found != string::npos) {
-        parsed.push_back(args.substr(0, found));
-        args = args.substr(found + 1, args.size() - found - 1);
-        found = args.find(delimiter);
+        parsed.push_back(str.substr(0, found));
+        str = str.substr(found + 1, str.size() - found - 1);
+        found = str.find(delimiter);
     }
-    parsed.push_back(args);
+    parsed.push_back(str);
     return parsed;
 }
 
-BaseFile *BaseCommand::getPointer(Directory *rootDir, Directory *currentDir, string path) {
-    vector<string> parsePath = parseArgs(path, '/');
+BaseFile *BaseCommand::getPointer(Directory *rootDir, Directory *currentDir, string path) { //return a pointer to the basefile which the path recived represent
+    vector<string> parsePath = split(path, '/');
     unsigned int i = 0;
     if (parsePath[0] == "") {
         if (parsePath.size() == 1)
@@ -88,7 +88,7 @@ LsCommand::LsCommand(string args) : BaseCommand(args) {
 }
 
 void LsCommand::execute(FileSystem &fs) {
-    vector<string> parse = parseArgs(getArgs(), ' ');
+    vector<string> parse = split(getArgs(), ' ');
     BaseFile *dir;
     if ((parse.size() == 1) && (parse[0] == "-s" || parse[0].empty()))
         dir = &fs.getWorkingDirectory();
@@ -114,7 +114,7 @@ string LsCommand::toString() { return "ls"; }
 MkdirCommand::MkdirCommand(string args) : BaseCommand(args) {}
 
 void MkdirCommand::execute(FileSystem &fs) {
-    vector<string> path = parseArgs(getArgs(), '/');
+    vector<string> path = split(getArgs(), '/');
 
     unsigned int i = 0;
     Directory *currentDir = &fs.getWorkingDirectory();
@@ -176,8 +176,8 @@ string MkdirCommand::toString() { return "mkdir"; }
 MkfileCommand::MkfileCommand(string args) : BaseCommand(args) {}
 
 void MkfileCommand::execute(FileSystem &fs) {
-    vector<string> arguments = parseArgs(getArgs(), ' ');
-    vector<string> path = parseArgs(arguments[0], '/');
+    vector<string> arguments = split(getArgs(), ' ');
+    vector<string> path = split(arguments[0], '/');
     string name = path[path.size() - 1];
     string dirPath = arguments[0].substr(0, arguments[0].size() - name.size());
     BaseFile *dir;
@@ -206,7 +206,7 @@ string MkfileCommand::toString() { return "mkfile"; }
 CpCommand::CpCommand(string args) : BaseCommand(args) {}
 
 void CpCommand::execute(FileSystem &fs) {
-    vector<string> parse = parseArgs(getArgs(), ' ');
+    vector<string> parse = split(getArgs(), ' ');
     BaseFile *destinationPath = getPointer(&fs.getRootDirectory(), &fs.getWorkingDirectory(), parse[1]);
     if (destinationPath == nullptr || destinationPath->isFile()) {
         cout << "No such file or directory" << endl;
@@ -237,7 +237,7 @@ string CpCommand::toString() { return "cp"; }
 MvCommand::MvCommand(string args) : BaseCommand(args) {}
 
 void MvCommand::execute(FileSystem &fs) {
-    vector<string> parse = parseArgs(getArgs(), ' ');
+    vector<string> parse = split(getArgs(), ' ');
     Directory *root = &fs.getRootDirectory();
     Directory *workingDirectory = &fs.getWorkingDirectory();
     BaseFile *destinationPath = getPointer(root, workingDirectory, parse[1]);
@@ -285,14 +285,18 @@ string MvCommand::toString() { return "mv"; }
 RenameCommand::RenameCommand(string args) : BaseCommand(args) {}
 
 void RenameCommand::execute(FileSystem &fs) {
-    vector<string> parse = parseArgs(getArgs(), ' ');
+    vector<string> parse = split(getArgs(), ' ');
     BaseFile *oldNamePointer = getPointer(&fs.getRootDirectory(), &fs.getWorkingDirectory(), parse[0]);
     if (oldNamePointer == nullptr) {
         cout << "No such file or directory" << endl;
         return;
     }
-    if (oldNamePointer == &fs.getWorkingDirectory() || oldNamePointer == &fs.getRootDirectory()) {
+    if (oldNamePointer == &fs.getWorkingDirectory()) {
         cout << "Can't rename the working directory" << endl;
+        return;
+    }
+    if ( oldNamePointer == &fs.getRootDirectory()){
+        cout << "Can't rename the root directory" << endl;
         return;
     }
     Directory *parent;
@@ -319,7 +323,7 @@ string RenameCommand::toString() { return "rename"; }
 RmCommand::RmCommand(string args) : BaseCommand(args) {}
 
 void RmCommand::execute(FileSystem &fs) {
-    vector<string> parse = parseArgs(getArgs(), ' ');
+    vector<string> parse = split(getArgs(), ' ');
     Directory *root = &fs.getRootDirectory();
     Directory *workingDirectory = &fs.getWorkingDirectory();
     BaseFile *toRemove = getPointer(root, workingDirectory, parse[0]);

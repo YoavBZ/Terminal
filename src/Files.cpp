@@ -103,11 +103,11 @@ bool sizeCompare(BaseFile *a, BaseFile *b) {
 }
 
 void Directory::sortByName() {
-    sort(children.begin(), children.end(), nameCompare);
+    stable_sort(children.begin(), children.end(), nameCompare);
 }
 
 void Directory::sortBySize() {
-    sort(children.begin(), children.end(), sizeCompare);
+    stable_sort(children.begin(), children.end(), sizeCompare);
 }
 
 bool Directory::isFile() { return false; }

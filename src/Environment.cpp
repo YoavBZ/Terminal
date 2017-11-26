@@ -19,9 +19,9 @@ void Environment::start() {
     string input;
     string command;
     string args;
+    cout << fs.getWorkingDirectory().getAbsolutePath() + '>';
+    getline(cin, input);
     while (input != "exit") {
-        cout << fs.getWorkingDirectory().getAbsolutePath() + '>';
-        getline(cin, input);
         int firstSpace = input.find(' ');
         if (firstSpace != -1) {
             command = input.substr(0, firstSpace);
@@ -31,9 +31,7 @@ void Environment::start() {
             args = "";
         }
         BaseCommand *baseCommand;
-        if (command == "exit")
-            return;
-        else if (command == "pwd")
+        if (command == "pwd")
             baseCommand = new PwdCommand(args);
         else if (command == "cd")
             baseCommand = new CdCommand(args);
@@ -64,15 +62,16 @@ void Environment::start() {
         }
         baseCommand->execute(fs);
         addToHistory(baseCommand);
+        cout << fs.getWorkingDirectory().getAbsolutePath() + '>';
+        getline(cin, input);
     }
-
 }
 
 void Environment::addToHistory(BaseCommand *command) {
     commandsHistory.push_back(command);
 }
 
-FileSystem &Environment::getFileSystem() const {
+FileSystem &Environment::getFileSystem() {
     return (FileSystem &) fs;
 }
 
